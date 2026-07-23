@@ -1,0 +1,13 @@
+# ให้ git จัดการ line ending อัตโนมัติตามระบบปฏิบัติการ
+* text=auto
+
+# ไฟล์ที่ต้องเป็น LF เสมอ (ไม่งั้น Docker / Linux รันไม่ได้)
+*.sh text eol=lf
+Dockerfile text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+
+# ไฟล์ binary ห้ามแตะ
+*.png binary
+*.jpg binary
+*.svg text
