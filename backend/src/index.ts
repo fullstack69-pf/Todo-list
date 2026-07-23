@@ -1,9 +1,11 @@
 import "dotenv/config";
 import { dbClient } from "@db/client.js";
 import { todoTable } from "@db/schema.js";
+import authRouter from "@src/routes/auth.js";
+import { requireAuth } from "@src/middleware/auth.js";
 import cors from "cors";
 import Debug from "debug";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import type { ErrorRequestHandler } from "express";
 import express from "express";
 import helmet from "helmet";
@@ -25,10 +27,18 @@ app.use(
 // Extracts the entire body portion of an incoming request stream and exposes it on req.body.
 app.use(express.json());
 
-// Query
+// Auth routes (register / login / me)
+app.use("/auth", authRouter);
+
+// ทุก route ของ /todo ต้องล็อกอินก่อน
+app.use("/todo", requireAuth);
+
+// Query — เห็นเฉพาะงานของตัวเอง
 app.get("/todo", async (req, res, next) => {
   try {
-    const results = await dbClient.query.todoTable.findMany();
+    const results = await dbClient.query.todoTable.findMany({
+      where: eq(todoTable.userId, req.user!.userId),
+    });
     res.json(results);
   } catch (err) {
     next(err);
@@ -44,6 +54,7 @@ app.put("/todo", async (req, res, next) => {
       .insert(todoTable)
       .values({
         todoText,
+        userId: req.user!.userId,
       })
       .returning({ id: todoTable.id, todoText: todoTable.todoText });
     res.json({ msg: `Insert successfully`, data: result[0] });
@@ -59,16 +70,21 @@ app.patch("/todo", async (req, res, next) => {
     const todoText = req.body.todoText ?? "";
     if (!todoText || !id) throw new Error("Empty todoText or id");
 
-    // Check for existence if data
+    // เช็คว่ามีงานนี้จริง และเป็นของผู้ใช้คนนี้
     const results = await dbClient.query.todoTable.findMany({
-      where: eq(todoTable.id, id),
+      where: and(
+        eq(todoTable.id, id),
+        eq(todoTable.userId, req.user!.userId),
+      ),
     });
     if (results.length === 0) throw new Error("Invalid id");
 
     const result = await dbClient
       .update(todoTable)
       .set({ todoText })
-      .where(eq(todoTable.id, id))
+      .where(
+        and(eq(todoTable.id, id), eq(todoTable.userId, req.user!.userId)),
+      )
       .returning({ id: todoTable.id, todoText: todoTable.todoText });
     res.json({ msg: `Update successfully`, data: result });
   } catch (err) {
@@ -82,13 +98,20 @@ app.delete("/todo", async (req, res, next) => {
     const id = req.body.id ?? "";
     if (!id) throw new Error("Empty id");
 
-    // Check for existence if data
+    // เช็คว่ามีงานนี้จริง และเป็นของผู้ใช้คนนี้
     const results = await dbClient.query.todoTable.findMany({
-      where: eq(todoTable.id, id),
+      where: and(
+        eq(todoTable.id, id),
+        eq(todoTable.userId, req.user!.userId),
+      ),
     });
     if (results.length === 0) throw new Error("Invalid id");
 
-    await dbClient.delete(todoTable).where(eq(todoTable.id, id));
+    await dbClient
+      .delete(todoTable)
+      .where(
+        and(eq(todoTable.id, id), eq(todoTable.userId, req.user!.userId)),
+      );
     res.json({
       msg: `Delete successfully`,
       data: { id },
@@ -98,9 +121,12 @@ app.delete("/todo", async (req, res, next) => {
   }
 });
 
+// ลบงานทั้งหมดของตัวเอง
 app.post("/todo/all", async (req, res, next) => {
   try {
-    await dbClient.delete(todoTable);
+    await dbClient
+      .delete(todoTable)
+      .where(eq(todoTable.userId, req.user!.userId));
     res.json({
       msg: `Delete all rows successfully`,
       data: {},

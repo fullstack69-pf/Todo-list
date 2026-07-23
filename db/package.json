@@ -9,7 +9,8 @@
     "db:migrate": "drizzle-kit migrate",
     "db:prototype": "tsx ./db/prototype.ts",
     "build": "tsc && tsc-alias",
-    "eol": "eolConverter _entrypoint/*.sh"
+    "eol": "eolConverter _entrypoint/*.sh",
+    "db:studio": "drizzle-kit studio"
   },
   "keywords": [],
   "author": "",

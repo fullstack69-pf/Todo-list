@@ -1,15 +1,29 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { type TodoItem } from "./types";
+import { type TodoItem } from "../types";
+import { clearToken } from "../lib/auth";
 import dayjs from "dayjs";
-function App() {
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+import CalendarView from "../components/CalendarView";
+import EventModal from "../components/EventModal";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
+const TZ = "Asia/Bangkok";
+
+function Todo() {
   const [todos, setTodos] = useState<TodoItem[]>([]);
   const [inputText, setInputText] = useState("");
   const [mode, setMode] = useState<"ADD" | "EDIT">("ADD");
   const [curTodoId, setCurTodoId] = useState("");
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   async function fetchData() {
-    const res = await axios.get<TodoItem[]>("api/todo");
+    const res = await axios.get<TodoItem[]>("/api/todo");
     setTodos(res.data);
   }
 
@@ -68,10 +82,36 @@ function App() {
     setInputText("");
     setCurTodoId("");
   }
+
+  function handleLogout() {
+    clearToken();
+    navigate("/login");
+  }
+
+  // สร้างงานจากฟอร์ม event (กดวันที่บนปฏิทิน)
+  async function handleCreateEvent(data: {
+    todoText: string;
+    description: string;
+    dueDate: string;
+  }) {
+    await axios.put("/api/todo", data);
+    await fetchData();
+  }
+
   return (
     <div className="container">
-      <header>
+      <header
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
         <h1>Todo App</h1>
+
+        <button onClick={handleLogout} className="secondary">
+          ออกจากระบบ
+        </button>
       </header>
       <main>
         <div style={{ display: "flex", alignItems: "start" }}>
@@ -90,6 +130,18 @@ function App() {
             </button>
           )}
         </div>
+        <CalendarView
+          todos={todos}
+          onSelectDate={(date) => setSelectedDate(date)}
+        />
+
+        {selectedDate && (
+          <EventModal
+            date={selectedDate}
+            onClose={() => setSelectedDate(null)}
+            onSave={handleCreateEvent}
+          />
+        )}
         <div data-cy="todo-item-wrapper">
           {todos.sort(compareDate).map((item, idx) => {
             const { date, time } = formatDateTime(item.createdAt);
@@ -136,13 +188,13 @@ function App() {
   );
 }
 
-export default App;
+export default Todo;
 
 function formatDateTime(dateStr: string) {
   if (!dayjs(dateStr).isValid()) {
     return { date: "N/A", time: "N/A" };
   }
-  const dt = dayjs(dateStr);
+  const dt = dayjs(dateStr).tz(TZ);
   const date = dt.format("D/MM/YY");
   const time = dt.format("HH:mm");
   return { date, time };

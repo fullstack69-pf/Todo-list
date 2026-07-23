@@ -1,0 +1,287 @@
+/* ===== ตัวแปรสี ===== */
+:root {
+  --primary: #6366f1;
+  --primary-dark: #4f46e5;
+  --text: #1f2937;
+  --text-light: #6b7280;
+  --border: #e5e7eb;
+  --bg: #f9fafb;
+  --card: #ffffff;
+  --danger: #ef4444;
+  --radius: 12px;
+  --shadow: 0 1px 3px rgb(0 0 0 / 8%), 0 4px 12px rgb(0 0 0 / 5%);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ===== โครงหน้า ===== */
+.container {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 32px 20px 60px;
+}
+
+header {
+  margin-bottom: 24px;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+/* ===== ฟอร์ม (หน้า login / register) ===== */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 28px;
+  border-radius: var(--radius);
+  background: var(--card);
+  box-shadow: var(--shadow);
+}
+
+/* ===== ช่องกรอก ===== */
+input {
+  padding: 12px 14px;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgb(99 102 241 / 12%);
+}
+
+/* ===== ปุ่ม ===== */
+button {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 10px;
+  background: var(--primary);
+  color: white;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+button:hover:not(:disabled) {
+  background: var(--primary-dark);
+}
+
+button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ปุ่มรอง เช่น Cancel / ออกจากระบบ */
+button.secondary {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-light);
+}
+
+button.secondary:hover:not(:disabled) {
+  background: #fee2e2;
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+/* ===== แถวเพิ่มงาน (input + ปุ่ม) ===== */
+main > div:first-child {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+main > div:first-child input {
+  flex: 1;
+}
+
+/* ===== รายการงาน ===== */
+article {
+  align-items: center;
+  padding: 14px 16px;
+  margin-bottom: 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--card);
+  box-shadow: var(--shadow);
+  transition: border-color 0.2s;
+}
+
+article:hover {
+  border-color: var(--primary);
+}
+
+/* ข้อความงาน — ดันไอคอนแก้/ลบไปขวาสุด */
+article [data-cy="todo-item-text"] {
+  flex: 1;
+}
+
+/* ===== ลิงก์ ===== */
+a {
+  color: var(--primary);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+p {
+  color: var(--text-light);
+  font-size: 14px;
+}
+
+/* ===== มือถือ ===== */
+@media (max-width: 600px) {
+  main > div:first-child {
+    flex-direction: column;
+  }
+
+  article {
+    flex-wrap: wrap;
+  }
+}
+
+/* ===== ปฏิทิน ===== */
+.cal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.cal-header h1 {
+  font-size: 22px;
+}
+
+.cal-nav {
+  display: flex;
+  gap: 6px;
+}
+
+.cal-nav button {
+  padding: 8px 14px;
+}
+
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.cal-weekday {
+  padding: 8px 0;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-light);
+}
+
+.cal-cell {
+  min-height: 84px;
+  padding: 6px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--card);
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+
+.cal-cell:hover {
+  border-color: var(--primary);
+}
+
+.cal-cell.other-month {
+  opacity: 0.35;
+}
+
+.cal-cell.today .cal-date {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: white;
+}
+
+.cal-date {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.cal-markers {
+  margin-top: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cal-marker {
+  padding: 2px 5px;
+  border-radius: 4px;
+  background: rgb(99 102 241 / 15%);
+  color: var(--primary-dark);
+  font-size: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cal-marker.done {
+  background: rgb(107 114 128 / 15%);
+  color: var(--text-light);
+  text-decoration: line-through;
+}
+
+.cal-more {
+  font-size: 10px;
+  color: var(--text-light);
+}
+
+@media (max-width: 600px) {
+  .cal-cell {
+    min-height: 60px;
+    padding: 4px;
+  }
+  .cal-marker {
+    font-size: 9px;
+  }
+}
+
+.calendar {
+  margin: 24px 0;
+}
+
+.calendar h2 {
+  margin: 0;
+  font-size: 20px;
+}
