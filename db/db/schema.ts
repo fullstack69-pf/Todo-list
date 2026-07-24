@@ -4,6 +4,7 @@ import {
   uuid,
   varchar,
   boolean,
+  text,
 } from "drizzle-orm/pg-core";
 
 export const userTable = pgTable("user", {
@@ -27,6 +28,9 @@ export const todoTable = pgTable("todo", {
     .notNull()
     .references(() => userTable.id, { onDelete: "cascade" }),
   todoText: varchar("todo_text", { length: 255 }).notNull(),
+
+  description: text("description"),
+  dueDate: timestamp("due_date", { withTimezone: true }),
 
   isDone: boolean("is_done").default(false),
   createdAt: timestamp("created_at", { withTimezone: true })
