@@ -263,7 +263,7 @@ function AuthPage({ initialMode = "login" }: Props) {
                 disabled={loading}
                 style={{ width: "100%", boxSizing: "border-box", padding: 16, borderRadius: 999, border: "none", background: ACCENT, color: "white", fontSize: 16, fontWeight: 700, cursor: "pointer", marginTop: 4, opacity: loading ? 0.7 : 1 }}
               >
-                {loading ? "Processing..." : isRegister ? "Login" : "Register"}
+                {loading ? "Processing..." : isRegister ? "Register" : "Login"}
               </button>
             </div>
           </form>
