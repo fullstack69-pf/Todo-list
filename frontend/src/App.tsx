@@ -1,9 +1,8 @@
 import type { ReactNode } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { isLoggedIn } from "./lib/auth";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
 import Todo from "./pages/Todo";
+import AuthPage from "./pages/AuthPage";
 
 
 //ยังไม่ล็อกอินให้เด้งไปหน้า login
@@ -14,8 +13,8 @@ function ProtectedRoute({ children }: { children: ReactNode }) {
 function App() {
   return (
     <Routes>
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
+      <Route path="/login" element={<AuthPage initialMode="login" />} />
+      <Route path="/register" element={<AuthPage initialMode="register" />} />
       <Route
         path="/"
         element={
