@@ -4,11 +4,13 @@ import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import { type TodoItem } from "../types";
 
+
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
 const TZ = "Asia/Bangkok";
-const WEEKDAYS = ["อา", "จ", "อ", "พ", "พฤ", "ศ", "ส"];
+const WEEKDAYS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
+
 
 type CalendarViewProps = {
   todos: TodoItem[];
@@ -47,7 +49,7 @@ function CalendarView({ todos, onSelectDate }: CalendarViewProps) {
             className="secondary"
             onClick={() => setCurrent(dayjs().tz(TZ))}
           >
-            วันนี้
+            Today
           </button>
           <button
             className="secondary"
@@ -69,6 +71,7 @@ function CalendarView({ todos, onSelectDate }: CalendarViewProps) {
           const items = todosOn(day);
           const isToday = day.isSame(dayjs().tz(TZ), "day");
           const isOtherMonth = !day.isSame(current, "month");
+          const isPast = day.isBefore(dayjs().tz(TZ), "day");
 
           return (
             <div
@@ -77,8 +80,12 @@ function CalendarView({ todos, onSelectDate }: CalendarViewProps) {
                 "cal-cell",
                 isOtherMonth ? "other-month" : "",
                 isToday ? "today" : "",
+                isPast ? "past" : "",
               ].join(" ")}
-              onClick={() => onSelectDate?.(day.format("YYYY-MM-DD"))}
+              onClick={() => {
+                if (isPast) return;
+                onSelectDate?.(day.format("YYYY-MM-DD"));
+              }}
               data-cy="calendar-cell"
             >
               <span className="cal-date">{day.date()}</span>

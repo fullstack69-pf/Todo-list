@@ -96,12 +96,12 @@ function AuthPage({ initialMode = "login" }: Props) {
           <h2
             style={{
               margin: 10,
-              fontSize: 45,
+              fontSize: 60,
               fontWeight: 800,
               color: "oklch(0.25 0.02 259)",
             }}
           >
-            Welcome
+            Next plan
           </h2>
           <p
             style={{
